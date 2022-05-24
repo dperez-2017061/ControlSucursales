@@ -14,22 +14,17 @@ exports.addProduct = async(req,res)=>{
             name: params.name,
             provider: params.provider,
             stock: params.stock,
-            enterprise: params.enterprise
+            enterprise: req.enterprise.sub
         };
 
         let msg = validateData(data);
         if(msg) return res.status(400).send(msg);
-        let enterpriseExist = await Enterprise.findOne({name: params.enterprise});
-        if(!enterpriseExist) return res.send({message: 'Enterprise not found'});
         let productEnterpriseExist = await ProductEnterprise.findOne({ $and:[
             {name: params.name},
             {provider: params.provider},
-            {enterprise: enterpriseExist._id}
+            {enterprise: data.enterprise}
         ]});
         if(productEnterpriseExist) return res.status(400).send({message: `Product ${params.name} with provider ${params.provider} already exist`});
-        data.enterprise = enterpriseExist._id;
-        let permission = await checkPermission(enterpriseExist._id, req.enterprise.sub);
-        if(permission === false) return res.status(401).send({message: 'You dont have permission to create products in this enterprise'});
 
         let productEnterprise = new ProductEnterprise(data);
         await productEnterprise.save();
