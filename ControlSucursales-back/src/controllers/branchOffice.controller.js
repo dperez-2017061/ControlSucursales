@@ -45,9 +45,9 @@ exports.updateBranchOffice = async(req,res)=>{
         let branchOfficeExist = await BranchOffice.findOne({_id: branchOfficeId});
         if(!branchOfficeExist) return res.send({message: 'BranchOffice not found'});
         let nameExist = await BranchOffice.findOne({name: params.name});
-        if(nameExist) return res.send({message: `BranchOffice ${params.name} already exist`}); 
+        if(nameExist && branchOfficeExist.name != params.name) return res.send({message: `BranchOffice ${params.name} already exist`}); 
         let addressExist = await BranchOffice.findOne({address:params.address});
-        if(addressExist) return res.send({message: `The address:${params.address} is already in used`});
+        if(addressExist && branchOfficeExist.address != params.address) return res.send({message: `The address:${params.address} is already in used`});
         let permission = await checkPermission(branchOfficeExist.enterprise, req.enterprise.sub);
         if(permission === false)  return res.status(401).send({message: 'You dont have permission to update branchOffices in this enterprise'});
         const validateUpdate = await checkUpdate(params);

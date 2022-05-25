@@ -101,7 +101,7 @@ exports.updateEnterprise = async(req,res)=>{
         let enterpriseExist = await Enterprise.findOne({_id: enterpriseId});
         if(!enterpriseExist) return res.send({message: 'Enterprise not found'});
         let nameExist = await Enterprise.findOne({name: params.name});
-        if(nameExist) return res.send({message: `Enterprise ${params.name} already exist`});
+        if(nameExist && enterpriseExist.name != params.name)return res.send({message: `Enterprise ${params.name} already exist`});
         const validateUpdate = await checkUpdate(params);
         if(validateUpdate === false) return res.status(400).send({message: 'Cannot update this information or invalid params'});
         let enterpriseUpdate = await Enterprise.findOneAndUpdate({_id: enterpriseId}, params, {new:true}).lean();
