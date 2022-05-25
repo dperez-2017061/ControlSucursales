@@ -13,13 +13,11 @@ exports.createBranchOffice = async(req,res)=>{
             address: params.address,
             businessHours: params.businessHours,
             phone: params.phone,
-            enterprise: params.enterprise
+            enterprise: req.enterprise.sub
         };
 
         let msg = validateData(data);
         if(msg) return res.status(400).send(msg);
-        let enterpriseExist = await Enterprise.findOne({name: params.enterprise});
-        if(!enterpriseExist) return res.send({message: 'Enterprise not found'});
         let nameExist = await BranchOffice.findOne({name:params.name});
         if(nameExist) return res.send({message: `BranchOffice ${params.name} already exist`});
         let addressExist = await BranchOffice.findOne({address:params.address});
