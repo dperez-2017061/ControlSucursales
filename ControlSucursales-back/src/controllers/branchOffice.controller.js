@@ -22,9 +22,6 @@ exports.createBranchOffice = async(req,res)=>{
         if(nameExist) return res.send({message: `BranchOffice ${params.name} already exist`});
         let addressExist = await BranchOffice.findOne({address:params.address});
         if(addressExist) return res.send({message: `The address:${params.address} is already in used`});
-        let permission = await checkPermission(enterpriseExist._id, req.enterprise.sub);
-        if(permission == false)  return res.status(401).send({message: 'You dont have permission to create branchOffices in this enterprise'});
-        data.enterprise = enterpriseExist._id;
         let branchOffice = new BranchOffice(data);
         await branchOffice.save();
         return res.send({message: 'BranchOffice created successfully'});
