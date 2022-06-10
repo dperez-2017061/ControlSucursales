@@ -11,6 +11,11 @@ import { RegisterComponent } from './components/register/register.component';
 import { LoginComponent } from './components/login/login.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { BranchOfficeComponent } from './components/branch-office/branch-office.component';
+import { BranchOfficesComponent } from './components/branch-offices/branch-offices.component';
+import { SearchPipe } from './pipes/search.pipe';
+import { ProductsBranchOfficeComponent } from './components/products-branch-office/products-branch-office.component';
+import { SearchProviderPipe } from './pipes/search-provider.pipe';
 
 @NgModule({
   declarations: [
@@ -20,7 +25,12 @@ import { HttpClientModule } from '@angular/common/http';
     NotFoundComponent,
     FooterComponent,
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    BranchOfficeComponent,
+    BranchOfficesComponent,
+    SearchPipe,
+    ProductsBranchOfficeComponent,
+    SearchProviderPipe
   ],
   imports: [
     BrowserModule,
