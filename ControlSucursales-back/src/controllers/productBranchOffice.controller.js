@@ -4,36 +4,38 @@ const ProductBranchOffice = require('../models/productBranchOffice.model');
 const { validateData, checkPermission } = require('../utils/validate');
 const BranchOffice = require('../models/branchOffice.model');
 
-exports.buyProduct = async(req,res)=>{
+exports.sellProduct = async(req,res)=>{
     try{
         let params = req.body;
         let data = {
             name: params.name,
             quantity: Number(params.quantity),
-            branchOffice: params.branchOffice
+            branchOffice: params.branchOffice,
+            provider: params.provider
         };
 
         let msg = validateData(data);
         if(msg) return res.status(400).send(msg);
         let nameExist = await ProductBranchOffice.findOne({$and:[
             {name: data.name},
-            {enterprise: req.enterprise.sub}
+            {enterprise: req.enterprise.sub},
+            {branchOffice: data.branchOffice},
+            {provider: data.provider}
         ]});
         if(!nameExist) return res.send({message: 'Product not found'});
-        let branchOfficeExist = await BranchOffice.findOne({name: data.branchOffice});
+        let branchOfficeExist = await BranchOffice.findOne({_id: data.branchOffice});
         if(!branchOfficeExist) return res.send({message: 'BranchOffice not found'});
         if(data.quantity === 0) return res.status(400).send({message: 'Cannot distribute 0 products'});
         if(nameExist.stock < data.quantity) return res.send({message: `Only have ${nameExist.stock} in stock`});
         let permission = await checkPermission(branchOfficeExist.enterprise, req.enterprise.sub);
         if(permission === false) return res.status(401).send({message: 'The branchOffice not exist in this enterprise'});
-
+        
         let info = {
             stock: nameExist.stock - data.quantity,
             sales: nameExist.sales + data.quantity
         };
-
         await ProductBranchOffice.findOneAndUpdate({_id: nameExist._id}, info, {new: true});
-        return res.send({product:data, message: 'Product buy successfully'});
+        return res.send({product:data, message: 'Product selling successfully'});
 
     }catch(err){
         console.log(err);

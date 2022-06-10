@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EnterpriseModel } from 'src/app/models/enterprise.model';
 import { EnterpriseRestService } from 'src/app/services/enterpriseRest/enterprise-rest.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'register',
@@ -18,21 +19,35 @@ export class RegisterComponent implements OnInit {
     private enterpriseRest: EnterpriseRestService,
     private router: Router
   ) {
-    this.enterprise = new EnterpriseModel('','','','','');
+    this.enterprise = new EnterpriseModel('','','','','','');
    }
 
   ngOnInit(): void {
   }
 
-  async checkPass(){
+  checkPass(){
     clearTimeout(this.timer);
-    this.timer = await setTimeout(()=>{
+    this.timer = setTimeout(()=>{
       if(this.confirmPass != this.enterprise.password){
-        alert('Password doesnt match');
+        Swal.fire({
+          title: 'Password doesnt match',
+          icon: 'error',
+          position: 'center',
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar:true
+          })
         clearTimeout(this.timer);
         this.pass = '';
       }else{
-        alert('Password match');
+        Swal.fire({
+          title: 'Password match',
+          icon: 'success',
+          position: 'center',
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar:true
+          })
         clearTimeout(this.timer);
         this.pass = 'as';
       }
@@ -42,12 +57,25 @@ export class RegisterComponent implements OnInit {
   createEnterprise(registerForm:any){
   this.enterpriseRest.createEnterprise(this.enterprise).subscribe({
     next: (res:any)=>{
-      alert(res.message);
-      return this.router.navigateByUrl('login');
+      Swal.fire({
+        title: res.message,
+        icon: 'success',
+        position: 'center',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar:true
+      })
+      this.router.navigateByUrl('/enterprise/enterprises');
     },
     error: (err)=>{
-      registerForm.reset();
-      return alert(err.error.message || err.error);
+      Swal.fire({
+        title: err.error.message || err.message || err.error,
+        icon: 'error',
+        position: 'center',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar:true
+      })
     }
   })
   }

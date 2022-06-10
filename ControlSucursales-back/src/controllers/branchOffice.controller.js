@@ -106,7 +106,13 @@ exports.searchBranchOffice = async(req,res)=>{
 exports.getBranchOffice = async(req,res)=>{
     try{
         let branchOfficeId = req.params.id;
-        let branchOffice = await BranchOffice.findOne({_id: branchOfficeId}).lean().populate('enterprise');
+        let branchOffice = await BranchOffice.findOne({
+            $and:[
+                {_id: branchOfficeId},
+                {enterprise: req.enterprise.sub}
+            ]})
+        .lean()
+        .populate('enterprise');
         if(!branchOffice) return res.send({message: 'BranchOffice not found'});
         let permission = await checkPermission(branchOffice.enterprise._id,req.enterprise.sub);
         if(permission == false)  return res.status(401).send({message: 'You dont have permission to get this branchOffice'});
@@ -122,6 +128,7 @@ exports.getBranchOffice = async(req,res)=>{
 exports.getBranchOffices = async(req,res)=>{
     try{
         let branchOffices = await BranchOffice.find({enterprise: req.enterprise.sub}).lean().populate('enterprise');
+        if(branchOffices.length === 0)return res.send({message: 'Branchoffices not found'})
         for(let branchOffice of branchOffices){
             delete branchOffice.enterprise.password;
             delete branchOffice.enterprise.role;

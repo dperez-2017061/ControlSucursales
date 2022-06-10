@@ -2,7 +2,6 @@
 
 const ProductEnterprise = require('../models/productEnterprise.model');
 const { validateData, checkPermission, checkUpdate } = require('../utils/validate');
-const Enterprise = require('../models/enterprise.model');
 const ProductBranchOffice = require('../models/productBranchOffice.model');
 const BranchOffice = require('../models/branchOffice.model');
 
@@ -16,7 +15,6 @@ exports.addProduct = async(req,res)=>{
             stock: params.stock,
             enterprise: req.enterprise.sub
         };
-
         let msg = validateData(data);
         if(msg) return res.status(400).send(msg);
         let productEnterpriseExist = await ProductEnterprise.findOne({ $and:[
@@ -25,7 +23,7 @@ exports.addProduct = async(req,res)=>{
             {enterprise: data.enterprise}
         ]});
         if(productEnterpriseExist) return res.status(400).send({message: `Product ${params.name} with provider ${params.provider} already exist`});
-
+        if(data.stock === 0)return res.send({message: 'Input a valid value for stock'})
         let productEnterprise = new ProductEnterprise(data);
         await productEnterprise.save();
         return res.send({message: 'Product created successfully'});
@@ -38,7 +36,8 @@ exports.addProduct = async(req,res)=>{
 
 exports.getProductsEnterprise = async(req,res)=>{
     try{
-        let productsEnterprise = await ProductEnterprise.find({enterprise: req.enterprise.sub}).lean().populate('enterprise');
+        let productsEnterprise = await ProductEnterprise.find({enterprise: req.enterprise.sub}).lean().populate();
+        if(productsEnterprise.length === 0) return res.send({message: 'Not found products'});
         for(let products of productsEnterprise){
             delete products.enterprise.password;
             delete products.enterprise.role;
@@ -46,7 +45,7 @@ exports.getProductsEnterprise = async(req,res)=>{
         return res.send({products: productsEnterprise});
     }catch(err){
         console.log(err);
-        return res.status(500).send({err, message: 'Error getting branchOffices'});
+        return res.status(500).send({err, message: 'Error getting products'});
     }
 };
 
@@ -83,7 +82,7 @@ exports.deleteProductEnterprise = async(req,res)=>{
         let productEnterpriseExist = await ProductEnterprise.findOne({_id: productEnterpriseId});
         if(!productEnterpriseExist) return res.send({message: 'Product not found'});
         let permission = await checkPermission(productEnterpriseExist.enterprise, req.enterprise.sub);
-        if(permission === false)  return res.status(401).send({message: 'You dont have permission to update products in this enterprise'});
+        if(permission === false)  return res.status(401).send({message: 'You dont have permission to delete products in this enterprise'});
         let productEnterpriseDelelete = await ProductEnterprise.findOneAndDelete({_id: productEnterpriseId});
         return res.send({name: productEnterpriseDelelete.name, message: 'Product deleted'});
 
@@ -113,11 +112,11 @@ exports.distributeProducts = async(req,res)=>{
         let branchOfficeExist = await BranchOffice.findOne({$and:[
             {name: data.branchOffice},
             {enterprise: req.enterprise.sub}
-        ]});
+        ]}).lean();
         if(!branchOfficeExist) return res.send({message: 'BranchOffice not found'});
         if(data.stock === 0) return res.status(400).send({message: 'Cannot distribute 0 products'});
-        if(nameExist.stock < data.stock) return res.send({message: 'Not in stock'});
-        let validatePermission = await checkPermission(nameExist.enterprise, req.enterprise.sub)
+        if(nameExist.stock < data.stock) return res.send({message: `Only have ${nameExist.stock} in stock`});
+        let validatePermission = await checkPermission(nameExist.enterprise, req.enterprise.sub);
         let permission = await checkPermission(branchOfficeExist.enterprise, req.enterprise.sub);
         if(permission === false || validatePermission === false) return res.status(401).send({message: 'You dont have permission to distribute products of this enterprise'});
         let productExist = await ProductBranchOffice.findOne({$and:[
@@ -226,6 +225,6 @@ exports.getProductEnterprise = async(req,res)=>{
         return res.send({productEnterprise});
     }catch(err){
         console.log(err);
-        return res.status(500).send({err, message: 'Error getting branchOffices'});
+        return res.status(500).send({err, message: 'Error getting product'});
     }
 };
