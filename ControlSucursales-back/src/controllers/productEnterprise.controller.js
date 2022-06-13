@@ -53,11 +53,10 @@ exports.updateProductEnterprise = async(req,res)=>{
     try{
         let productEnterpriseId = req.params.id;
         let params = req.body;
-
         let productEnterpriseExist = await ProductEnterprise.findOne({_id: productEnterpriseId});
         if(!productEnterpriseExist) return res.send({message: 'Product not found'});
         let nameExist = await ProductEnterprise.findOne({name: params.name, provider: params.provider, enterprise: req.enterprise.sub});
-        if(nameExist && productEnterpriseExist.name != params.name || productEnterpriseExist.provider != params.provider) return res.status(400).send({message: `Product ${nameExist.name} with provider ${nameExist.provider} already exist in this enterprise`});
+        if(nameExist && (productEnterpriseExist.provider != params.provider || productEnterpriseExist.name != params.name)) return res.status(400).send({message: `Product ${nameExist.name} with provider ${nameExist.provider} already exist in this enterprise`});
         let permission = await checkPermission(productEnterpriseExist.enterprise, req.enterprise.sub);
         if(permission === false)  return res.status(401).send({message: 'You dont have permission to update products in this enterprise'});
         const validateUpdate = await checkUpdate(params);

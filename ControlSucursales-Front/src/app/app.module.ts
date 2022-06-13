@@ -16,7 +16,10 @@ import { BranchOfficesComponent } from './components/branch-offices/branch-offic
 import { SearchPipe } from './pipes/search.pipe';
 import { ProductsBranchOfficeComponent } from './components/products-branch-office/products-branch-office.component';
 import { SearchProviderPipe } from './pipes/search-provider.pipe';
-
+import { EnterpriseComponent } from './components/enterprise/enterprise.component';
+import { EnterprisesComponent } from './components/enterprises/enterprises.component';
+import { ProductsEnterpriseComponent } from './components/products-enterprise/products-enterprise.component';
+import { BranchofficesAdminComponent } from './components/branch-offices-admin/branch-offices-admin.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +33,11 @@ import { SearchProviderPipe } from './pipes/search-provider.pipe';
     BranchOfficesComponent,
     SearchPipe,
     ProductsBranchOfficeComponent,
-    SearchProviderPipe
+    SearchProviderPipe,
+    EnterpriseComponent,
+    EnterprisesComponent,
+    ProductsEnterpriseComponent,
+    BranchofficesAdminComponent
   ],
   imports: [
     BrowserModule,

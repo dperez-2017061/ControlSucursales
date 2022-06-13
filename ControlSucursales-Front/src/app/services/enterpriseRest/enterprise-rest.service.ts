@@ -42,4 +42,24 @@ export class EnterpriseRestService {
       }
       return identity;
     }
+
+    getEnterprises(){
+      return this.http.get(environment.baseUrl + 'enterprise/getEnterprises', {headers: this.httpOptions});
+    }
+    
+    saveEnterprise(params:{}){
+      return this.http.post(environment.baseUrl + 'enterprise/saveEnterprise', params, {headers: this.httpOptions});
+    }
+  
+    getEnterprise(id:string){
+      return this.http.get(environment.baseUrl + 'enterprise/getEnterprise/' + id, {headers: this.httpOptions});
+    }
+  
+    updateEnterprise(id:string, params:{}){
+      return this.http.put(environment.baseUrl + 'enterprise/updateEnterprise/' + id, params, {headers: this.httpOptions});
+    }
+  
+    deleteEnterprise(id:string){
+      return this.http.delete(environment.baseUrl + 'enterprise/deleteEnterprise/' + id, {headers: this.httpOptions});
+    }
 }
