@@ -139,7 +139,7 @@ export class ProductsBranchOfficeComponent implements OnInit {
     
     this.productBranchOfficeRest.sellProduct(this.productBuy).subscribe({
       next:(res:any)=>{
-        if(res.message === 'Product buy successfully'){
+        if(res.message === 'Product selling successfully'){
           Swal.fire({
             title: res.message,
             icon: 'success',

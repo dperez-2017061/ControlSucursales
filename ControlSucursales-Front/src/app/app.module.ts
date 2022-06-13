@@ -20,6 +20,8 @@ import { EnterpriseComponent } from './components/enterprise/enterprise.componen
 import { EnterprisesComponent } from './components/enterprises/enterprises.component';
 import { ProductsEnterpriseComponent } from './components/products-enterprise/products-enterprise.component';
 import { BranchofficesAdminComponent } from './components/branch-offices-admin/branch-offices-admin.component';
+import { GraphComponent } from './components/graph/graph.component';
+import { NgChartsModule } from 'ng2-charts';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,13 +39,15 @@ import { BranchofficesAdminComponent } from './components/branch-offices-admin/b
     EnterpriseComponent,
     EnterprisesComponent,
     ProductsEnterpriseComponent,
-    BranchofficesAdminComponent
+    BranchofficesAdminComponent,
+    GraphComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    NgChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
